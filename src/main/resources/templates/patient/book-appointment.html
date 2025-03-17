@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Clinic360</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/patient/dashboard">
+                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/patient/appointments">
+                                <i class="bi bi-calendar-check me-2"></i>My Appointments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="/patient/book-appointment">
+                                <i class="bi bi-journal-plus me-2"></i>Book Appointment
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/patient/profile">
+                                <i class="bi bi-person-circle me-2"></i>Profile
+                            </a>
+                        </li>
+                        <li class="nav-item mt-3">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="btn btn-outline-light w-100">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Book an Appointment</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/patient/appointments" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-calendar-check"></i> My Appointments
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- Instructions -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h4>How to Book an Appointment</h4>
+                    </div>
+                    <div class="card-body">
+                        <ol>
+                            <li>Select a doctor from the dropdown menu</li>
+                            <li>Choose a date for your appointment</li>
+                            <li>Select an available time slot</li>
+                            <li>Confirm your booking</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Booking form -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Appointment Booking Form</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/patient/book-appointment}" method="post" id="appointmentForm">
+                            <div class="mb-3">
+                                <label for="doctorId" class="form-label">Select Doctor</label>
+                                <select class="form-select" id="doctorId" name="doctorId" required>
+                                    <option value="">Choose a doctor</option>
+                                    <option th:each="doctor : ${doctors}" 
+                                            th:value="${doctor.id}" 
+                                            th:text="${doctor.firstName + ' ' + doctor.lastName + ' - ' + doctor.specialization}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="appointmentDate" class="form-label">Select Date</label>
+                                <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required>
+                                <small class="form-text text-muted">Select a date to see available time slots</small>
+                            </div>
+                            
+                            <!-- Time slots will be loaded here by AJAX -->
+                            <div id="timeSlotContainer" class="mb-3" style="display: none;">
+                                <label class="form-label">Select Time Slot</label>
+                                <div id="timeSlots" class="row">
+                                    <p class="text-center text-muted">Loading available time slots...</p>
+                                </div>
+                                <input type="hidden" id="selectedTimeSlot" name="timeSlotId">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="bookButton" disabled>
+                                <i class="bi bi-calendar-check"></i> Book Appointment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Additional information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Important Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5><i class="bi bi-exclamation-triangle text-warning me-2"></i>Cancellation Policy</h5>
+                        <p>Appointments can be cancelled up to 24 hours before the scheduled time without any charges. Late cancellations may incur a fee.</p>
+                        
+                        <h5><i class="bi bi-clock text-primary me-2"></i>Late Arrival</h5>
+                        <p>Please arrive 15 minutes before your scheduled appointment time. Late arrivals may result in shortened consultation time or rescheduling if necessary.</p>
+                        
+                        <h5><i class="bi bi-shield-check text-success me-2"></i>Insurance</h5>
+                        <p>Please bring your insurance card and a valid ID to your appointment. Contact our office beforehand to verify if your insurance is accepted.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const doctorSelect = document.getElementById('doctorId');
+            const dateInput = document.getElementById('appointmentDate');
+            const timeSlotContainer = document.getElementById('timeSlotContainer');
+            const timeSlotsDiv = document.getElementById('timeSlots');
+            const selectedTimeSlotInput = document.getElementById('selectedTimeSlot');
+            const bookButton = document.getElementById('bookButton');
+            
+            // Set minimum date to today
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+            
+            // Function to load available time slots
+            function loadTimeSlots() {
+                const doctorId = doctorSelect.value;
+                const date = dateInput.value;
+                
+                if (doctorId && date) {
+                    timeSlotContainer.style.display = 'block';
+                    timeSlotsDiv.innerHTML = '<p class="text-center"><i class="bi bi-hourglass-split me-2"></i>Loading available time slots...</p>';
+                    
+                    // AJAX call to get available time slots
+                    fetch(`/api/timeslots?doctorId=${doctorId}&date=${date}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                timeSlotsDiv.innerHTML = '<p class="text-center text-danger"><i class="bi bi-exclamation-circle me-2"></i>No available time slots for this date. Please select another date.</p>';
+                                return;
+                            }
+                            
+                            let html = '';
+                            data.forEach(slot => {
+                                html += `
+                                    <div class="col-md-3 col-sm-6 mb-2">
+                                        <div class="card time-slot" data-id="${slot.id}">
+                                            <div class="card-body text-center p-2">
+                                                <span>${slot.startTime} - ${slot.endTime}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            timeSlotsDiv.innerHTML = html;
+                            
+                            // Add event listeners to time slots
+                            document.querySelectorAll('.time-slot').forEach(slot => {
+                                slot.addEventListener('click', function() {
+                                    // Remove selected class from all slots
+                                    document.querySelectorAll('.time-slot').forEach(s => {
+                                        s.classList.remove('bg-primary', 'text-white');
+                                    });
+                                    
+                                    // Add selected class to current slot
+                                    this.classList.add('bg-primary', 'text-white');
+                                    
+                                    // Set selected time slot ID
+                                    selectedTimeSlotInput.value = this.getAttribute('data-id');
+                                    
+                                    // Enable book button
+                                    bookButton.disabled = false;
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            timeSlotsDiv.innerHTML = '<p class="text-center text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Error loading time slots. Please try again.</p>';
+                            console.error('Error loading time slots:', error);
+                        });
+                } else {
+                    timeSlotContainer.style.display = 'none';
+                    bookButton.disabled = true;
+                }
+            }
+            
+            // Event listeners
+            doctorSelect.addEventListener('change', loadTimeSlots);
+            dateInput.addEventListener('change', loadTimeSlots);
+            
+            // Form validation
+            document.getElementById('appointmentForm').addEventListener('submit', function(event) {
+                if (!selectedTimeSlotInput.value) {
+                    event.preventDefault();
+                    alert('Please select a time slot');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

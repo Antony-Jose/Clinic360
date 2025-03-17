@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - Clinic360</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/doctor/dashboard">
+                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/doctor/availability">
+                                <i class="bi bi-calendar-check me-2"></i>Set Availability
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/doctor/appointments">
+                                <i class="bi bi-journal-medical me-2"></i>Appointments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/doctor/patients">
+                                <i class="bi bi-people me-2"></i>Patients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="/doctor/profile">
+                                <i class="bi bi-person-circle me-2"></i>Profile
+                            </a>
+                        </li>
+                        <li class="nav-item mt-3">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="btn btn-outline-light w-100">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Doctor Profile</h1>
+                </div>
+
+                <!-- Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="row">
+                    <!-- Personal Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Personal Information</h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/doctor/profile/personal}" method="post" th:object="${doctorProfile}">
+                                    <div class="mb-3">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" th:value="${doctor.firstName}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" th:value="${doctor.lastName}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" th:value="${doctor.email}" readonly>
+                                        <small class="form-text text-muted">Email address cannot be changed</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" th:value="${doctor.phoneNumber}" 
+                                               pattern="[0-9]{10}" placeholder="10 digit phone number">
+                                        <small class="form-text text-muted">Format: 10 digits without spaces or dashes</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
+                                               th:value="${doctor.dateOfBirth}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea class="form-control" id="address" name="address" rows="3" 
+                                                  th:text="${doctor.address}"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Save Personal Information
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information and Account Settings -->
+                    <div class="col-md-6">
+                        <!-- Professional Information -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0">Professional Information</h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/doctor/profile/professional}" method="post">
+                                    <div class="mb-3">
+                                        <label for="specialization" class="form-label">Specialization</label>
+                                        <input type="text" class="form-control" id="specialization" name="specialization" 
+                                               th:value="${doctor.specialization}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="licenseNumber" class="form-label">License Number</label>
+                                        <input type="text" class="form-control" id="licenseNumber" name="licenseNumber" 
+                                               th:value="${doctor.licenseNumber}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="education" class="form-label">Education</label>
+                                        <textarea class="form-control" id="education" name="education" rows="3" 
+                                                  th:text="${doctor.education}"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="experience" class="form-label">Experience (Years)</label>
+                                        <input type="number" class="form-control" id="experience" name="experience" 
+                                               th:value="${doctor.experience}" min="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bio" class="form-label">Professional Bio</label>
+                                        <textarea class="form-control" id="bio" name="bio" rows="5" 
+                                                  th:text="${doctor.bio}"></textarea>
+                                        <small class="form-text text-muted">This information will be visible to patients</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-save"></i> Save Professional Information
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Account Settings -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h4 class="mb-0">Account Settings</h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/doctor/profile/password}" method="post">
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="newPassword" name="newPassword" required
+                                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$">
+                                        <small class="form-text text-muted">Password must be at least 8 characters long and include at least one letter and one number</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-info text-white">
+                                        <i class="bi bi-key"></i> Change Password
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultation Fee Settings -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">Consultation Fee Settings</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/doctor/profile/fees}" method="post">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="standardFee" class="form-label">Standard Consultation Fee</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="standardFee" name="standardFee" 
+                                                   th:value="${doctor.standardFee}" min="0" step="0.01" required>
+                                        </div>
+                                        <small class="form-text text-muted">Regular consultation fee for 15-minute time slot</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="extendedFee" class="form-label">Extended Consultation Fee</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="extendedFee" name="extendedFee" 
+                                                   th:value="${doctor.extendedFee}" min="0" step="0.01">
+                                        </div>
+                                        <small class="form-text text-muted">Fee for consultations longer than 15 minutes</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="feeNotes" class="form-label">Fee Notes</label>
+                                <textarea class="form-control" id="feeNotes" name="feeNotes" rows="3" 
+                                          th:text="${doctor.feeNotes}"></textarea>
+                                <small class="form-text text-muted">Additional information about your fees or payment methods</small>
+                            </div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-currency-dollar"></i> Update Fee Settings
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="mb-0">Notification Preferences</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/doctor/profile/notifications}" method="post">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" name="emailNotifications" 
+                                           th:checked="${doctor.emailNotifications}">
+                                    <label class="form-check-label" for="emailNotifications">Email Notifications</label>
+                                </div>
+                                <small class="form-text text-muted">Receive email notifications for new appointments, cancellations, and reminders</small>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="smsNotifications" name="smsNotifications" 
+                                           th:checked="${doctor.smsNotifications}">
+                                    <label class="form-check-label" for="smsNotifications">SMS Notifications</label>
+                                </div>
+                                <small class="form-text text-muted">Receive SMS notifications for new appointments, cancellations, and reminders</small>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="dailyDigest" name="dailyDigest" 
+                                           th:checked="${doctor.dailyDigest}">
+                                    <label class="form-check-label" for="dailyDigest">Daily Schedule Digest</label>
+                                </div>
+                                <small class="form-text text-muted">Receive a daily email with your appointment schedule for the day</small>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">
+                                <i class="bi bi-bell"></i> Update Notification Preferences
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password confirmation validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const password = document.getElementById('newPassword');
+            const confirm = document.getElementById('confirmPassword');
+            
+            function validatePassword() {
+                if (password.value !== confirm.value) {
+                    confirm.setCustomValidity("Passwords Don't Match");
+                } else {
+                    confirm.setCustomValidity('');
+                }
+            }
+            
+            if (password && confirm) {
+                password.addEventListener('change', validatePassword);
+                confirm.addEventListener('keyup', validatePassword);
+            }
+        });
+    </script>
+</body>
+</html> 
