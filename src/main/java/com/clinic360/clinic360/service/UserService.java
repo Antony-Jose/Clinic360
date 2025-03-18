@@ -2,6 +2,7 @@ package com.clinic360.clinic360.service;
 
 import com.clinic360.clinic360.dto.DoctorRegistrationRequest;
 import com.clinic360.clinic360.dto.PatientRegistrationRequest;
+import com.clinic360.clinic360.dto.DoctorProfileUpdateRequest;
 import com.clinic360.clinic360.entity.Doctor;
 import com.clinic360.clinic360.entity.Patient;
 import com.clinic360.clinic360.entity.User;
@@ -21,6 +22,9 @@ public interface UserService {
     Doctor getDoctorById(Long doctorId);
     Patient getPatientById(Long patientId);
     List<Doctor> getAllDoctors();
+    List<Patient> getAllPatients();
     List<Patient> getPatientsByDoctorId(Long doctorId);
     User updateUser(User user);
+    void updateDoctorProfile(Long doctorId, DoctorProfileUpdateRequest request);
+    void removeDoctor(Long doctorId);
 } 

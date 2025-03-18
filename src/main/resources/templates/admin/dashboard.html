@@ -25,9 +25,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/doctors">Manage Doctors</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="/admin/patients">Manage Patients</a>
-                    </li>
+                    </li> -->
                 </ul>
                 <div class="d-flex">
                     <a href="/logout" class="btn btn-light">Logout</a>
@@ -51,7 +51,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 class="card-title">Doctors</h5>
-                                <h2 class="card-text">0</h2>
+                                <h2 class="card-text" th:text="${doctorCount}">0</h2>
                             </div>
                             <i class="bi bi-person-badge fs-1"></i>
                         </div>
@@ -66,7 +66,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 class="card-title">Patients</h5>
-                                <h2 class="card-text">0</h2>
+                                <h2 class="card-text" th:text="${patientCount}">0</h2>
                             </div>
                             <i class="bi bi-people fs-1"></i>
                         </div>
@@ -81,7 +81,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 class="card-title">Appointments</h5>
-                                <h2 class="card-text">0</h2>
+                                <h2 class="card-text" th:text="${appointmentCount}">0</h2>
                             </div>
                             <i class="bi bi-calendar-check fs-1"></i>
                         </div>
@@ -102,12 +102,18 @@
                             <a href="/admin/register-doctor" class="list-group-item list-group-item-action">
                                 <i class="bi bi-person-plus me-2"></i> Register New Doctor
                             </a>
-                            <a href="/admin/appointments/create" class="list-group-item list-group-item-action">
+                            <a href="/admin/doctors" class="list-group-item list-group-item-action">
+                                <i class="bi bi-person-badge me-2"></i> Manage Doctors
+                            </a>
+                            <a href="/admin/register-doctor" class="list-group-item list-group-item-action">
+                                <i class="bi bi-person-plus me-2"></i> Register Doctor
+                            </a>
+                            <!-- <a href="/admin/appointments/create" class="list-group-item list-group-item-action">
                                 <i class="bi bi-calendar-plus me-2"></i> Schedule Appointment
                             </a>
                             <a href="/admin/reports" class="list-group-item list-group-item-action">
                                 <i class="bi bi-file-earmark-text me-2"></i> Generate Reports
-                            </a>
+                            </a> -->
                         </div>
                     </div>
                 </div>

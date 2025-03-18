@@ -11,6 +11,7 @@ import com.clinic360.clinic360.repository.AppointmentRepository;
 import com.clinic360.clinic360.repository.DoctorRepository;
 import com.clinic360.clinic360.repository.PatientRepository;
 import com.clinic360.clinic360.service.AppointmentService;
+import com.clinic360.clinic360.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
+    private final UserService userService;
 
     @Override
     @Transactional
@@ -219,5 +221,29 @@ public class AppointmentServiceImpl implements AppointmentService {
         response.setEndTime(appointment.getEndTime());
         response.setStatus(appointment.getStatus());
         return response;
+    }
+
+    @Override
+    public List<AppointmentResponse> getDoctorAppointmentsForCurrentWeek(Long doctorId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDoctorAppointmentsForCurrentWeek'");
+    }
+
+    @Override
+    public Object getPendingPrescriptionsCount(Long doctorId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPendingPrescriptionsCount'");
+    }
+
+    @Override
+    public List<Appointment> getUpcomingAppointmentsByDoctorId(Long doctorId) {
+        LocalDate today = LocalDate.now();
+        return appointmentRepository.findByDoctorIdAndAppointmentDateGreaterThanEqualAndStatusNotOrderByAppointmentDateAscStartTimeAsc(
+            doctorId, today, AppointmentStatus.CANCELLED);
+    }
+
+    @Override
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
     }
 } 

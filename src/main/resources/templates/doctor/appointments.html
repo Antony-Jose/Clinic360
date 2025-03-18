@@ -96,7 +96,7 @@
                                         <th>Time</th>
                                         <th>Patient Name</th>
                                         <th>Status</th>
-                                        <th>Prescription</th>
+                                        <!-- <th>Prescription</th> -->
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -113,14 +113,14 @@
                                             <span th:if="${appointment.status.name() == 'COMPLETED'}" class="badge bg-success">Completed</span>
                                             <span th:if="${appointment.status.name() == 'CANCELLED'}" class="badge bg-danger">Cancelled</span>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             <span th:if="${appointment.prescriptionNotes != null && !appointment.prescriptionNotes.empty}">
                                                 <i class="bi bi-file-medical text-success"></i> Added
                                             </span>
                                             <span th:if="${appointment.prescriptionNotes == null || appointment.prescriptionNotes.empty}">
                                                 <i class="bi bi-file-earmark text-muted"></i> None
                                             </span>
-                                        </td>
+                                        </td> -->
                                         <td>
                                             <a th:href="@{/doctor/appointments/{id}(id=${appointment.id})}" 
                                                class="btn btn-sm btn-outline-primary">

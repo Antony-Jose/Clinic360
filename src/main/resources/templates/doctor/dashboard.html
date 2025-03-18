@@ -56,17 +56,6 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Doctor Dashboard</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <a href="/doctor/appointments" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-calendar-week"></i> All Appointments
-                            </a>
-                            <a th:href="@{/doctor/appointments/date(date=${T(java.time.LocalDate).now()})}" 
-                               class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-calendar-day"></i> Today's Schedule
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Alerts -->
@@ -82,268 +71,49 @@
                 <!-- Welcome banner -->
                 <div class="card mb-4 bg-primary text-white">
                     <div class="card-body">
-                        <h3>Welcome, Dr. 
-                            <!-- <span th:text="${doctor.lastName}"></span> -->
-                        </h3>
+                        <h3>Welcome, Dr. <span th:text="${doctor != null ? doctor.lastName : 'Doctor'}"></span></h3>
                         <p class="lead">Here's your overview for today, <span th:text="${#temporals.format(T(java.time.LocalDate).now(), 'EEEE, MMMM d, yyyy')}"></span></p>
                     </div>
                 </div>
 
-                <!-- Stats cards -->
+                <!-- Simple content to get started -->
                 <div class="row mb-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="card text-bg-primary h-100">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Quick Actions</h4>
+                            </div>
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title">Appointments Today</h6>
-                                        <h2 class="card-text" th:text="${appointmentsToday}">0</h2>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><i class="bi bi-calendar-plus text-primary me-2"></i>Manage Availability</h5>
+                                                <p class="card-text">Set or update your weekly availability schedule for appointments.</p>
+                                                <a href="/doctor/availability" class="btn btn-primary">Set Availability</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <i class="bi bi-calendar2-day fs-1"></i>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><i class="bi bi-people text-success me-2"></i>View Patients</h5>
+                                                <p class="card-text">Access your patient list and their medical records.</p>
+                                                <a href="/doctor/patients" class="btn btn-success">View Patients</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><i class="bi bi-person-vcard text-info me-2"></i>Update Profile</h5>
+                                                <p class="card-text">Update your professional information and account settings.</p>
+                                                <a href="/doctor/profile" class="btn btn-info text-white">My Profile</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-footer d-flex justify-content-between align-items-center">
-                                <a th:href="@{/doctor/appointments/date(date=${T(java.time.LocalDate).now()})}" class="text-white text-decoration-none">
-                                    View Details
-                                </a>
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card text-bg-success h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title">Appointments This Week</h6>
-                                        <h2 class="card-text" th:text="${appointmentsThisWeek}">0</h2>
-                                    </div>
-                                    <i class="bi bi-calendar-week fs-1"></i>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between align-items-center">
-                                <a href="/doctor/appointments" class="text-white text-decoration-none">
-                                    View Details
-                                </a>
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card text-bg-info h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title">Total Patients</h6>
-                                        <h2 class="card-text" th:text="${totalPatients}">0</h2>
-                                    </div>
-                                    <i class="bi bi-people fs-1"></i>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between align-items-center">
-                                <a href="/doctor/patients" class="text-white text-decoration-none">
-                                    View Details
-                                </a>
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card text-bg-warning h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title">Pending Prescriptions</h6>
-                                        <h2 class="card-text" th:text="${pendingPrescriptions}">0</h2>
-                                    </div>
-                                    <i class="bi bi-file-earmark-medical fs-1"></i>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between align-items-center">
-                                <a href="/doctor/prescriptions/pending" class="text-dark text-decoration-none">
-                                    View Details
-                                </a>
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Today's schedule -->
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Today's Schedule</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 15%">Time</th>
-                                        <th style="width: 25%">Patient</th>
-                                        <th style="width: 15%">Status</th>
-                                        <th style="width: 15%">Prescription</th>
-                                        <th style="width: 30%">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- <tr th:if="${todayAppointments.empty}">
-                                        <td colspan="5" class="text-center">No appointments scheduled for today</td>
-                                    </tr> -->
-                                    <tr th:each="appointment : ${todayAppointments}">
-                                        <td th:text="${#temporals.format(appointment.startTime, 'hh:mm a') + ' - ' + #temporals.format(appointment.endTime, 'hh:mm a')}"></td>
-                                        <td th:text="${appointment.patientName}"></td>
-                                        <td>
-                                            <span th:if="${appointment.status.name() == 'SCHEDULED'}" class="badge bg-primary">Scheduled</span>
-                                            <span th:if="${appointment.status.name() == 'COMPLETED'}" class="badge bg-success">Completed</span>
-                                            <span th:if="${appointment.status.name() == 'CANCELLED'}" class="badge bg-danger">Cancelled</span>
-                                        </td>
-                                        <td>
-                                            <span th:if="${appointment.prescriptionNotes != null && !appointment.prescriptionNotes.empty}">
-                                                <i class="bi bi-file-medical text-success"></i> Added
-                                            </span>
-                                            <span th:if="${appointment.prescriptionNotes == null || appointment.prescriptionNotes.empty}">
-                                                <i class="bi bi-file-earmark text-muted"></i> None
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a th:href="@{/doctor/appointments/{id}(id=${appointment.id})}" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i> View
-                                            </a>
-                                            
-                                            <form th:if="${appointment.status.name() == 'SCHEDULED'}" 
-                                                  th:action="@{/doctor/appointments/{id}/status(id=${appointment.id})}" 
-                                                  method="post" class="d-inline ms-1">
-                                                <input type="hidden" name="status" value="COMPLETED">
-                                                <button type="submit" class="btn btn-sm btn-outline-success">
-                                                    <i class="bi bi-check-circle"></i> Complete
-                                                </button>
-                                            </form>
-                                            
-                                            <form th:if="${appointment.status.name() == 'SCHEDULED'}" 
-                                                  th:action="@{/doctor/appointments/{id}/status(id=${appointment.id})}" 
-                                                  method="post" class="d-inline ms-1">
-                                                <input type="hidden" name="status" value="CANCELLED">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                        onclick="return confirm('Are you sure you want to cancel this appointment?')">
-                                                    <i class="bi bi-x-circle"></i> Cancel
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a th:href="@{/doctor/appointments/date(date=${T(java.time.LocalDate).now()})}" class="btn btn-primary">
-                                <i class="bi bi-calendar-day"></i> View Full Schedule
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Upcoming appointments -->
-                <div class="card mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h4 class="mb-0">Upcoming Appointments</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Patient</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:if="${upcomingAppointments.empty}">
-                                        <td colspan="5" class="text-center">No upcoming appointments</td>
-                                    </tr>
-                                    <tr th:each="appointment : ${upcomingAppointments}">
-                                        <td th:text="${#temporals.format(appointment.appointmentDate, 'MMM dd, yyyy')}"></td>
-                                        <td th:text="${#temporals.format(appointment.startTime, 'hh:mm a') + ' - ' + #temporals.format(appointment.endTime, 'hh:mm a')}"></td>
-                                        <td th:text="${appointment.patientName}"></td>
-                                        <td>
-                                            <span class="badge bg-primary">Scheduled</span>
-                                        </td>
-                                        <td>
-                                            <a th:href="@{/doctor/appointments/{id}(id=${appointment.id})}" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i> View
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="/doctor/appointments" class="btn btn-success">
-                                <i class="bi bi-calendar-week"></i> View All Appointments
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick actions cards -->
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-calendar-plus text-primary me-2"></i>Manage Availability</h5>
-                                <p class="card-text">Set or update your weekly availability schedule for appointments.</p>
-                                <a href="/doctor/availability" class="btn btn-primary">Set Availability</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-people text-success me-2"></i>View Patients</h5>
-                                <p class="card-text">Access your patient list and their medical records.</p>
-                                <a href="/doctor/patients" class="btn btn-success">View Patients</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-person-vcard text-info me-2"></i>Update Profile</h5>
-                                <p class="card-text">Update your professional information and account settings.</p>
-                                <a href="/doctor/profile" class="btn btn-info text-white">My Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent notifications -->
-                <div class="card mb-4">
-                    <div class="card-header bg-warning text-dark">
-                        <h4 class="mb-0">Recent Notifications</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li th:if="${recentNotifications.empty}" class="list-group-item">
-                                <p class="text-center text-muted">No recent notifications</p>
-                            </li>
-                            <li th:each="notification : ${recentNotifications}" class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <span class="fw-bold" th:text="${notification.title}"></span>
-                                        <p class="mb-0" th:text="${notification.message}"></p>
-                                    </div>
-                                    <span class="text-muted small" th:text="${#temporals.format(notification.createdAt, 'MMM dd, hh:mm a')}"></span>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="text-center mt-3">
-                            <a href="/doctor/notifications" class="btn btn-warning">
-                                <i class="bi bi-bell"></i> View All Notifications
-                            </a>
                         </div>
                     </div>
                 </div>

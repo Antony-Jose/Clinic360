@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByLicenseNumber(String licenseNumber);
     boolean existsByLicenseNumber(String licenseNumber);
+    boolean existsByLicenseNumberAndIdNot(String licenseNumber, Long doctorId);
 } 

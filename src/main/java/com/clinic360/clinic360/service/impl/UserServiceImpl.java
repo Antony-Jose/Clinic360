@@ -2,6 +2,7 @@ package com.clinic360.clinic360.service.impl;
 
 import com.clinic360.clinic360.dto.DoctorRegistrationRequest;
 import com.clinic360.clinic360.dto.PatientRegistrationRequest;
+import com.clinic360.clinic360.dto.DoctorProfileUpdateRequest;
 import com.clinic360.clinic360.entity.Doctor;
 import com.clinic360.clinic360.entity.Patient;
 import com.clinic360.clinic360.entity.User;
@@ -12,6 +13,7 @@ import com.clinic360.clinic360.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -137,5 +139,80 @@ public class UserServiceImpl implements UserService {
         
         // Save the updated user
         return userRepository.save(user);
+    }
+
+    @Override
+    public void updateDoctorProfile(Long doctorId, DoctorProfileUpdateRequest request) {
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        
+        // Update basic info
+        if (request.getFirstName() != null && !request.getFirstName().isEmpty()) {
+            doctor.setFirstName(request.getFirstName());
+        }
+        
+        if (request.getLastName() != null && !request.getLastName().isEmpty()) {
+            doctor.setLastName(request.getLastName());
+        }
+        
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            // Check if email is already in use by another user
+            if (userRepository.existsByEmailAndIdNot(request.getEmail(), doctorId)) {
+                throw new RuntimeException("Email is already in use");
+            }
+            doctor.setEmail(request.getEmail());
+        }
+        
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
+            doctor.setPhoneNumber(request.getPhoneNumber());
+        }
+        
+        if (request.getSpecialization() != null && !request.getSpecialization().isEmpty()) {
+            doctor.setSpecialization(request.getSpecialization());
+        }
+        
+        if (request.getLicenseNumber() != null && !request.getLicenseNumber().isEmpty()) {
+            // Check if license number is already in use by another doctor
+            if (doctorRepository.existsByLicenseNumberAndIdNot(request.getLicenseNumber(), doctorId)) {
+                throw new RuntimeException("License number is already registered");
+            }
+            doctor.setLicenseNumber(request.getLicenseNumber());
+        }
+        
+        // Password change logic
+        if (request.getCurrentPassword() != null && !request.getCurrentPassword().isEmpty() &&
+            request.getNewPassword() != null && !request.getNewPassword().isEmpty()) {
+            
+            // Verify current password
+            if (!passwordEncoder.matches(request.getCurrentPassword(), doctor.getPassword())) {
+                throw new RuntimeException("Current password is incorrect");
+            }
+            
+            // Verify password confirmation
+            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+                throw new RuntimeException("New passwords do not match");
+            }
+            
+            // Update password
+            doctor.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+        
+        doctorRepository.save(doctor);
+    }
+
+    @Override
+    @Transactional
+    public void removeDoctor(Long doctorId) {
+        // Check if doctor exists
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + doctorId));
+        
+        // Delete the doctor
+        doctorRepository.delete(doctor);
+    }
+
+    @Override
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
     }
 } 

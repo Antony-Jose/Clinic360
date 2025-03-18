@@ -34,4 +34,12 @@ public interface AppointmentService {
     boolean isTimeSlotAvailable(Long doctorId, LocalDate date, java.time.LocalTime startTime, java.time.LocalTime endTime);
     
     boolean canPatientBookAppointment(Long patientId, LocalDate date, java.time.LocalTime startTime, java.time.LocalTime endTime);
+
+    List<AppointmentResponse> getDoctorAppointmentsForCurrentWeek(Long doctorId);
+
+    Object getPendingPrescriptionsCount(Long doctorId);
+
+    List<Appointment> getUpcomingAppointmentsByDoctorId(Long doctorId);
+
+    List<Appointment> getAllAppointments();
 } 

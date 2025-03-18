@@ -152,7 +152,7 @@
                                         <th>Phone</th>
                                         <th>Date of Birth</th>
                                         <th>Last Visit</th>
-                                        <th>Actions</th>
+                                        <!-- <th>Actions</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -164,17 +164,17 @@
                                         <td th:text="${patient.email}"></td>
                                         <td th:text="${patient.phoneNumber}"></td>
                                         <td th:text="${#temporals.format(patient.dateOfBirth, 'MMM dd, yyyy')}"></td>
-                                        <td th:text="${patient.lastVisit != null ? #temporals.format(patient.lastVisit, 'MMM dd, yyyy') : 'Never'}"></td>
-                                        <td>
-                                            <a th:href="@{/doctor/patients/{id}(id=${patient.id})}" 
+                                        <td>N/A</td>
+                                        <!-- <td> -->
+                                            <!-- <a th:href="@{/doctor/patients/{id}(id=${patient.id})}" 
                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i> View
-                                            </a>
-                                            <a th:href="@{/doctor/patients/{id}/medical-history(id=${patient.id})}" 
+                                            </a> -->
+                                            <!-- <a th:href="@{/doctor/patients/{id}/medical-history(id=${patient.id})}" 
                                                class="btn btn-sm btn-outline-info">
                                                 <i class="bi bi-clipboard2-pulse"></i> Medical History
                                             </a>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>
@@ -215,8 +215,8 @@
                                         <th>Name</th>
                                         <th>Visit Date</th>
                                         <th>Reason</th>
-                                        <th>Prescription</th>
-                                        <th>Actions</th>
+                                        <!-- <th>Prescription</th>
+                                        <th>Actions</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -227,7 +227,7 @@
                                         <td th:text="${visit.patientName}"></td>
                                         <td th:text="${#temporals.format(visit.visitDate, 'MMM dd, yyyy')}"></td>
                                         <td th:text="${visit.reason}"></td>
-                                        <td>
+                                        <!-- <td>
                                             <span th:if="${visit.hasPrescription}" class="badge bg-success">Yes</span>
                                             <span th:unless="${visit.hasPrescription}" class="badge bg-secondary">No</span>
                                         </td>
@@ -240,7 +240,7 @@
                                                class="btn btn-sm btn-outline-info">
                                                 <i class="bi bi-person"></i> Patient Profile
                                             </a>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>

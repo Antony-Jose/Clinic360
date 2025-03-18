@@ -67,4 +67,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a FROM Appointment a WHERE a.patient = :patient AND a.appointmentDate >= :today " +
            "AND a.status = 'SCHEDULED' ORDER BY a.appointmentDate, a.startTime")
     List<Appointment> findUpcomingAppointmentsForPatient(Patient patient, LocalDate today);
+
+    List<Appointment> findByDoctorId(Long doctorId);
+    List<Appointment> findByPatientId(Long patientId);
+    List<Appointment> findByDoctorIdAndAppointmentDateGreaterThanEqualAndStatusNotOrderByAppointmentDateAscStartTimeAsc(
+        Long doctorId, LocalDate date, AppointmentStatus status);
 } 
