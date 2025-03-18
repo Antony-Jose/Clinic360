@@ -71,35 +71,33 @@
                                 <h4 class="mb-0">Personal Information</h4>
                             </div>
                             <div class="card-body">
-                                <form th:action="@{/patient/profile/update}" method="post" th:object="${patientProfile}">
+                                <form th:action="@{/patient/profile/update}" method="post" th:object="${patient}">
                                     <div class="mb-3">
                                         <label for="firstName" class="form-label">First Name</label>
-                                        <input type="text" class="form-control" id="firstName" name="firstName" th:value="${patient.firstName}" required>
+                                        <input type="text" class="form-control" id="firstName" th:field="*{firstName}" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="lastName" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" id="lastName" name="lastName" th:value="${patient.lastName}" required>
+                                        <input type="text" class="form-control" id="lastName" th:field="*{lastName}" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" id="email" th:value="${patient.email}" readonly>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}" readonly>
                                         <small class="form-text text-muted">Email address cannot be changed</small>
                                     </div>
                                     <div class="mb-3">
                                         <label for="phoneNumber" class="form-label">Phone Number</label>
-                                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" th:value="${patient.phoneNumber}" 
+                                        <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" 
                                                pattern="[0-9]{10}" placeholder="10 digit phone number">
                                         <small class="form-text text-muted">Format: 10 digits without spaces or dashes</small>
                                     </div>
                                     <div class="mb-3">
                                         <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
-                                               th:value="${patient.dateOfBirth}">
+                                        <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}">
                                     </div>
                                     <div class="mb-3">
                                         <label for="address" class="form-label">Address</label>
-                                        <textarea class="form-control" id="address" name="address" rows="3" 
-                                                  th:text="${patient.address}"></textarea>
+                                        <textarea class="form-control" id="address" th:field="*{address}" rows="3"></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="bi bi-save"></i> Save Changes
@@ -139,7 +137,7 @@
                             </div>
                         </div>
 
-                        <!-- Medical Information -->
+                        <!-- Medical Information
                         <div class="card">
                             <div class="card-header bg-success text-white">
                                 <h4 class="mb-0">Medical Information</h4>
@@ -169,11 +167,11 @@
                                     </button>
                                 </form>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
-                <!-- Emergency Contact Information -->
+                <!-- Emergency Contact Information
                 <div class="card mt-4 mb-4">
                     <div class="card-header bg-warning text-dark">
                         <h4 class="mb-0">Emergency Contact Information</h4>
@@ -209,7 +207,7 @@
                             </button>
                         </form>
                     </div>
-                </div>
+                </div> -->
             </main>
         </div>
     </div>

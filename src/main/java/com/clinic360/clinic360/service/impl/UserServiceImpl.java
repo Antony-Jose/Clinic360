@@ -215,4 +215,21 @@ public class UserServiceImpl implements UserService {
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
+
+    @Override
+    @Transactional
+    public Patient updatePatient(Patient patient) {
+        Patient existingPatient = patientRepository.findById(patient.getId())
+            .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patient.getId()));
+        
+        // Update only the allowed fields
+        existingPatient.setFirstName(patient.getFirstName());
+        existingPatient.setLastName(patient.getLastName());
+        existingPatient.setEmail(patient.getEmail());
+        existingPatient.setPhoneNumber(patient.getPhoneNumber());
+        existingPatient.setAddress(patient.getAddress());
+        existingPatient.setDateOfBirth(patient.getDateOfBirth());
+        
+        return patientRepository.save(existingPatient);
+    }
 } 

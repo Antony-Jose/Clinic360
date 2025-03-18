@@ -4,6 +4,7 @@ import com.clinic360.clinic360.dto.AppointmentRequest;
 import com.clinic360.clinic360.dto.AppointmentResponse;
 import com.clinic360.clinic360.entity.Appointment;
 import com.clinic360.clinic360.entity.Doctor;
+import com.clinic360.clinic360.entity.Patient;
 import com.clinic360.clinic360.entity.TimeSlot;
 import com.clinic360.clinic360.service.AppointmentService;
 import com.clinic360.clinic360.service.DoctorAvailabilityService;
@@ -111,5 +112,20 @@ public class PatientController {
         Long patientId = userService.getUserIdFromUsername(authentication.getName());
         model.addAttribute("patient", userService.getPatientById(patientId));
         return "patient/profile";
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(Authentication authentication,
+                              @ModelAttribute("patient") Patient patient,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            Long patientId = userService.getUserIdFromUsername(authentication.getName());
+            patient.setId(patientId); // Ensure we're updating the correct patient
+            userService.updatePatient(patient);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update profile: " + e.getMessage());
+        }
+        return "redirect:/patient/profile";
     }
 } 

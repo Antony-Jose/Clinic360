@@ -27,4 +27,5 @@ public interface UserService {
     User updateUser(User user);
     void updateDoctorProfile(Long doctorId, DoctorProfileUpdateRequest request);
     void removeDoctor(Long doctorId);
+    Patient updatePatient(Patient patient);
 } 
