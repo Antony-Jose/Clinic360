@@ -89,7 +89,7 @@
                         <h4>Appointment Booking Form</h4>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/patient/book-appointment}" method="post" id="appointmentForm">
+                        <form th:action="@{/patient/book-appointment}" id="appointmentForm" method="POST">
                             <div class="mb-3">
                                 <label for="doctorId" class="form-label">Select Doctor</label>
                                 <select class="form-select" id="doctorId" name="doctorId" required>
@@ -100,6 +100,7 @@
                                     </option>
                                 </select>
                             </div>
+
                             <div class="mb-3">
                                 <label for="appointmentDate" class="form-label">Select Date</label>
                                 <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required>
@@ -113,6 +114,8 @@
                                     <p class="text-center text-muted">Loading available time slots...</p>
                                 </div>
                                 <input type="hidden" id="selectedTimeSlot" name="timeSlotId">
+                                <input type="hidden" id="startTime" name="startTime"/>
+                                <input type="hidden" id="endTime" name="endTime"/>
                             </div>
 
                             <button type="submit" class="btn btn-primary" id="bookButton" disabled>
@@ -151,6 +154,9 @@
             const timeSlotsDiv = document.getElementById('timeSlots');
             const selectedTimeSlotInput = document.getElementById('selectedTimeSlot');
             const bookButton = document.getElementById('bookButton');
+            const appointmentForm = document.getElementById("appointmentForm")
+            const startTimeInput = document.getElementById("startTime")
+            const endTimeInput = document.getElementById("endTime")
             
             // Set minimum date to today
             const today = new Date();
@@ -169,7 +175,7 @@
                     timeSlotsDiv.innerHTML = '<p class="text-center"><i class="bi bi-hourglass-split me-2"></i>Loading available time slots...</p>';
                     
                     // AJAX call to get available time slots
-                    fetch(`/api/timeslots?doctorId=${doctorId}&date=${date}`)
+                    fetch(`/patient/doctor-slots?doctorId=${doctorId}&date=${date}`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.length === 0) {
@@ -195,6 +201,11 @@
                             // Add event listeners to time slots
                             document.querySelectorAll('.time-slot').forEach(slot => {
                                 slot.addEventListener('click', function() {
+                                    var slotTimeRange = slot.innerText;
+                                    var slotTimeRageToArray = slotTimeRange.split("-")
+                                    startTimeInput.setAttribute("value",slotTimeRageToArray[0].trim())
+                                    endTimeInput.setAttribute("value",slotTimeRageToArray[1].trim())
+
                                     // Remove selected class from all slots
                                     document.querySelectorAll('.time-slot').forEach(s => {
                                         s.classList.remove('bg-primary', 'text-white');
@@ -220,6 +231,20 @@
                     bookButton.disabled = true;
                 }
             }
+
+            // appointmentForm.addEventListener("submit", async (e)=>{
+            //     e.preventDefault();
+            //     console.log("submitBook")
+            //     var formData = new FormData(document.getElementById('appointmentForm'));
+            //     formData.append('startTime', "12:25:00");
+            //     formData.append('endTime', "12:40:00");
+            //     console.log(selectedTimeSlotInput)
+            //     // console.log(formData.getAll());
+            //     fetch('/patient/book-appointment', {
+            //         method: 'POST',
+            //         body: formData
+            //     })
+            // })
             
             // Event listeners
             doctorSelect.addEventListener('change', loadTimeSlots);

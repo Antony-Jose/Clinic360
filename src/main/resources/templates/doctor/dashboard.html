@@ -82,7 +82,9 @@
                 <!-- Welcome banner -->
                 <div class="card mb-4 bg-primary text-white">
                     <div class="card-body">
-                        <h3>Welcome, Dr. <span th:text="${doctor.lastName}"></span></h3>
+                        <h3>Welcome, Dr. 
+                            <!-- <span th:text="${doctor.lastName}"></span> -->
+                        </h3>
                         <p class="lead">Here's your overview for today, <span th:text="${#temporals.format(T(java.time.LocalDate).now(), 'EEEE, MMMM d, yyyy')}"></span></p>
                     </div>
                 </div>
@@ -185,9 +187,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:if="${todayAppointments.empty}">
+                                    <!-- <tr th:if="${todayAppointments.empty}">
                                         <td colspan="5" class="text-center">No appointments scheduled for today</td>
-                                    </tr>
+                                    </tr> -->
                                     <tr th:each="appointment : ${todayAppointments}">
                                         <td th:text="${#temporals.format(appointment.startTime, 'hh:mm a') + ' - ' + #temporals.format(appointment.endTime, 'hh:mm a')}"></td>
                                         <td th:text="${appointment.patientName}"></td>

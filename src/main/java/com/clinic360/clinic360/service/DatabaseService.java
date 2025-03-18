@@ -1,9 +1,10 @@
 package com.clinic360.clinic360.service;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +21,9 @@ public class DatabaseService {
     private EntityManager entityManager;
 
     /**
-     * Tests database connectivity when the application starts
+     * Tests database connectivity when the application is ready
      */
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void testDatabaseConnection() {
         try {
@@ -40,4 +41,4 @@ public class DatabaseService {
             log.error("❌ Database connection test failed: {}", e.getMessage(), e);
         }
     }
-} 
+}

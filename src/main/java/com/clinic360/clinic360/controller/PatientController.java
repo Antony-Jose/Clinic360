@@ -68,6 +68,7 @@ public class PatientController {
                                  @ModelAttribute AppointmentRequest request,
                                  RedirectAttributes redirectAttributes) {
         Long patientId = userService.getUserIdFromUsername(authentication.getName());
+        System.out.println("Patient ID: " + request);
         try {
             // Check if patient is already booked at the same time with another doctor
             if (!appointmentService.canPatientBookAppointment(patientId, request.getAppointmentDate(), 
@@ -76,13 +77,14 @@ public class PatientController {
                     "You already have an appointment scheduled at this time. Please choose a different time.");
                 return "redirect:/patient/book-appointment";
             }
-            
+                
             Appointment appointment = appointmentService.bookAppointment(patientId, request);
             redirectAttributes.addFlashAttribute("successMessage", 
                 "Appointment booked successfully for " + request.getAppointmentDate() + " at " + request.getStartTime());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to book appointment: " + e.getMessage());
         }
+
         return "redirect:/patient/appointments";
     }
     
