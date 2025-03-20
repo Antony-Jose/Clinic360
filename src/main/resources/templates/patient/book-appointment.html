@@ -183,44 +183,8 @@
                                 return;
                             }
                             
-                            let html = '';
-                            data.forEach(slot => {
-                                html += `
-                                    <div class="col-md-3 col-sm-6 mb-2">
-                                        <div class="card time-slot" data-id="${slot.id}">
-                                            <div class="card-body text-center p-2">
-                                                <span>${slot.startTime} - ${slot.endTime}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                            
-                            timeSlotsDiv.innerHTML = html;
-                            
-                            // Add event listeners to time slots
-                            document.querySelectorAll('.time-slot').forEach(slot => {
-                                slot.addEventListener('click', function() {
-                                    var slotTimeRange = slot.innerText;
-                                    var slotTimeRageToArray = slotTimeRange.split("-")
-                                    startTimeInput.setAttribute("value",slotTimeRageToArray[0].trim())
-                                    endTimeInput.setAttribute("value",slotTimeRageToArray[1].trim())
-
-                                    // Remove selected class from all slots
-                                    document.querySelectorAll('.time-slot').forEach(s => {
-                                        s.classList.remove('bg-primary', 'text-white');
-                                    });
-                                    
-                                    // Add selected class to current slot
-                                    this.classList.add('bg-primary', 'text-white');
-                                    
-                                    // Set selected time slot ID
-                                    selectedTimeSlotInput.value = this.getAttribute('data-id');
-                                    
-                                    // Enable book button
-                                    bookButton.disabled = false;
-                                });
-                            });
+                            // Process time slots and check availability
+                            processTimeSlots(data, doctorId, date);
                         })
                         .catch(error => {
                             timeSlotsDiv.innerHTML = '<p class="text-center text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Error loading time slots. Please try again.</p>';
@@ -231,20 +195,103 @@
                     bookButton.disabled = true;
                 }
             }
-
-            // appointmentForm.addEventListener("submit", async (e)=>{
-            //     e.preventDefault();
-            //     console.log("submitBook")
-            //     var formData = new FormData(document.getElementById('appointmentForm'));
-            //     formData.append('startTime', "12:25:00");
-            //     formData.append('endTime', "12:40:00");
-            //     console.log(selectedTimeSlotInput)
-            //     // console.log(formData.getAll());
-            //     fetch('/patient/book-appointment', {
-            //         method: 'POST',
-            //         body: formData
-            //     })
-            // })
+            
+            // Helper function to check if slots are booked and render them
+            function processTimeSlots(slots, doctorId, date) {
+                let html = '';
+                let pendingSlots = slots.length;
+                let processedSlots = 0;
+                
+                // Create a function to render a single slot
+                function renderSlot(slot, isBooked) {
+                    const cardClass = isBooked ? 'bg-danger text-white' : '';
+                    const slotStatus = isBooked ? '<i class="bi bi-lock-fill"></i> Booked' : 'Available';
+                    const disabled = isBooked ? 'disabled' : '';
+                    
+                    return `
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <div class="card time-slot ${cardClass}" data-id="${slot.id}" ${disabled}>
+                                <div class="card-body text-center p-2">
+                                    <span>${slot.startTime} - ${slot.endTime}</span>
+                                    <div class="small">${slotStatus}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Check each slot's availability
+                slots.forEach(slot => {
+                    // Check if slot is already booked
+                    fetch(`/patient/check-slot-availability?doctorId=${doctorId}&date=${date}&startTime=${slot.startTime}&endTime=${slot.endTime}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // If data.available is false, the slot is booked
+                            html += renderSlot(slot, !data.available);
+                            
+                            processedSlots++;
+                            
+                            // If all slots are processed, update the DOM
+                            if (processedSlots === pendingSlots) {
+                                timeSlotsDiv.innerHTML = html;
+                                
+                                // Add event listeners to time slots that are not disabled
+                                document.querySelectorAll('.time-slot:not([disabled])').forEach(slotElem => {
+                                    slotElem.addEventListener('click', function() {
+                                        // Get the time range text
+                                        const slotTimeRange = this.querySelector('span').textContent;
+                                        const slotTimeRangeToArray = slotTimeRange.split('-');
+                                        startTimeInput.setAttribute('value', slotTimeRangeToArray[0].trim());
+                                        endTimeInput.setAttribute('value', slotTimeRangeToArray[1].trim());
+                                        
+                                        // Remove selected class from all slots
+                                        document.querySelectorAll('.time-slot:not([disabled])').forEach(s => {
+                                            s.classList.remove('bg-primary', 'text-white');
+                                        });
+                                        
+                                        // Add selected class to current slot
+                                        this.classList.add('bg-primary', 'text-white');
+                                        
+                                        // Set selected time slot ID
+                                        selectedTimeSlotInput.value = this.getAttribute('data-id');
+                                        
+                                        // Enable book button
+                                        bookButton.disabled = false;
+                                    });
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error checking slot availability:', error);
+                            processedSlots++;
+                            
+                            // Fallback to available if there's an error
+                            html += renderSlot(slot, false);
+                            
+                            if (processedSlots === pendingSlots) {
+                                timeSlotsDiv.innerHTML = html;
+                                
+                                // Add event listeners (same as above)
+                                document.querySelectorAll('.time-slot:not([disabled])').forEach(slotElem => {
+                                    slotElem.addEventListener('click', function() {
+                                        const slotTimeRange = this.querySelector('span').textContent;
+                                        const slotTimeRangeToArray = slotTimeRange.split('-');
+                                        startTimeInput.setAttribute('value', slotTimeRangeToArray[0].trim());
+                                        endTimeInput.setAttribute('value', slotTimeRangeToArray[1].trim());
+                                        
+                                        document.querySelectorAll('.time-slot:not([disabled])').forEach(s => {
+                                            s.classList.remove('bg-primary', 'text-white');
+                                        });
+                                        
+                                        this.classList.add('bg-primary', 'text-white');
+                                        selectedTimeSlotInput.value = this.getAttribute('data-id');
+                                        bookButton.disabled = false;
+                                    });
+                                });
+                            }
+                        });
+                });
+            }
             
             // Event listeners
             doctorSelect.addEventListener('change', loadTimeSlots);

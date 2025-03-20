@@ -23,4 +23,4 @@ public class Admin extends User {
         setLastName(lastName);
         setRole(Role.ADMIN);
     }
-} 
+}

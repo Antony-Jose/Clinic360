@@ -82,8 +82,10 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" id="email" th:field="*{email}" readonly>
-                                        <small class="form-text text-muted">Email address cannot be changed</small>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+                                               title="Please enter a valid email address with a proper domain (e.g., user@example.com)">
+                                        <small class="form-text text-muted">Enter a valid email address with a proper domain (e.g., user@example.com)</small>
                                     </div>
                                     <div class="mb-3">
                                         <label for="phoneNumber" class="form-label">Phone Number</label>

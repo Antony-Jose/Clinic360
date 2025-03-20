@@ -33,29 +33,25 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByPatientAndAppointmentDateGreaterThanEqualOrderByAppointmentDateAscStartTimeAsc(Patient patient, LocalDate date);
     
     @Query("SELECT a FROM Appointment a WHERE a.patient.id = :patientId AND a.appointmentDate = :date " +
-           "AND ((a.startTime <= :endTime AND a.endTime >= :startTime) OR " +
-           "(a.startTime >= :startTime AND a.startTime < :endTime)) " +
+           "AND (a.startTime = :startTime AND a.endTime = :endTime) " +
            "AND a.status != 'CANCELLED'")
     List<Appointment> findOverlappingAppointmentsForPatient(
             Long patientId, LocalDate date, LocalTime startTime, LocalTime endTime);
     
     @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId AND a.appointmentDate = :date " +
-           "AND ((a.startTime <= :endTime AND a.endTime >= :startTime) OR " +
-           "(a.startTime >= :startTime AND a.startTime < :endTime)) " +
+           "AND (a.startTime = :startTime AND a.endTime = :endTime) " +
            "AND a.status != 'CANCELLED'")
     List<Appointment> findOverlappingAppointmentsForDoctor(
             Long doctorId, LocalDate date, LocalTime startTime, LocalTime endTime);
     
     @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId AND a.appointmentDate = :date " +
-           "AND ((a.startTime <= :endTime AND a.endTime >= :startTime) OR " +
-           "(a.startTime >= :startTime AND a.startTime < :endTime)) " +
+           "AND (a.startTime = :startTime AND a.endTime = :endTime) " +
            "AND a.status != 'CANCELLED'")
     List<Appointment> findOverlappingAppointments(
             Long doctorId, LocalDate date, LocalTime startTime, LocalTime endTime);
     
     @Query("SELECT a FROM Appointment a WHERE a.patient.id = :patientId AND a.appointmentDate = :date " +
-           "AND ((a.startTime <= :endTime AND a.endTime >= :startTime) OR " +
-           "(a.startTime >= :startTime AND a.startTime < :endTime)) " +
+           "AND (a.startTime = :startTime AND a.endTime = :endTime) " +
            "AND a.status != 'CANCELLED'")
     List<Appointment> findPatientOverlappingAppointments(
             Long patientId, LocalDate date, LocalTime startTime, LocalTime endTime);

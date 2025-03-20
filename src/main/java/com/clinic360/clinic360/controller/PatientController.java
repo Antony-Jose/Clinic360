@@ -64,6 +64,25 @@ public class PatientController {
         return doctorAvailabilityService.getDoctorTimeSlotsForDate(doctorId, date);
     }
     
+    @GetMapping("/check-slot-availability")
+    @ResponseBody
+    public Object checkSlotAvailability(@RequestParam Long doctorId,
+                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                      @RequestParam String startTime,
+                                      @RequestParam String endTime) {
+        // Convert string times to LocalTime
+        java.time.LocalTime start = java.time.LocalTime.parse(startTime);
+        java.time.LocalTime end = java.time.LocalTime.parse(endTime);
+        
+        // Check if time slot is available
+        boolean isAvailable = appointmentService.isTimeSlotAvailable(doctorId, date, start, end);
+        
+        // Return a simple JSON object
+        return new java.util.HashMap<String, Object>() {{
+            put("available", isAvailable);
+        }};
+    }
+    
     @PostMapping("/book-appointment")
     public String bookAppointment(Authentication authentication,
                                  @ModelAttribute AppointmentRequest request,

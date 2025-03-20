@@ -40,6 +40,14 @@
             text-align: center;
             margin-top: 20px;
         }
+        .is-valid {
+            border-color: #198754;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
     </style>
 </head>
 <body>
@@ -54,43 +62,65 @@
                 <span th:text="${error}"></span>
             </div>
             
-            <form th:action="@{/register}" th:object="${patient}" method="post">
+            <form th:action="@{/register}" th:object="${patient}" method="post" id="registrationForm" novalidate>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
-                            <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required>
+                            <input type="text" id="firstName" th:field="*{firstName}" class="form-control" 
+                                  th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                            <div class="invalid-feedback" id="firstNameError"></div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="lastName">Last Name</label>
-                            <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required>
+                            <input type="text" id="lastName" th:field="*{lastName}" class="form-control"
+                                  th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                            <div class="invalid-feedback" id="lastNameError"></div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" th:field="*{email}" class="form-control" required>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" 
+                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                           title="Please enter a valid email address with a proper domain (e.g., user@example.com)" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    <div class="invalid-feedback" id="emailError"></div>
+                    <small class="form-text text-muted">Enter a valid email address with a proper domain (e.g., user@example.com)</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" th:field="*{username}" class="form-control" required>
+                    <input type="text" id="username" th:field="*{username}" class="form-control"
+                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                    <div class="invalid-feedback" id="usernameError"></div>
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" id="password" th:field="*{password}" class="form-control" required>
+                            <input type="password" id="password" th:field="*{password}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            <div class="invalid-feedback" id="passwordError"></div>
+                            <small class="form-text text-muted">Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character</small>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="confirmPassword">Confirm Password</label>
-                            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" required>
+                            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" 
+                                   th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            <div class="invalid-feedback" id="confirmPasswordError"></div>
                         </div>
                     </div>
                 </div>
@@ -99,24 +129,34 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="dateOfBirth">Date of Birth</label>
-                            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" class="form-control" required>
+                            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+                            <div class="invalid-feedback" id="dateOfBirthError"></div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="phoneNumber">Phone Number</label>
-                            <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" class="form-control" required>
+                            <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                            <div class="invalid-feedback" id="phoneNumberError"></div>
+                            <small class="form-text text-muted">10 digit phone number without spaces or dashes</small>
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="address">Address</label>
-                    <textarea id="address" th:field="*{address}" class="form-control" rows="3" required></textarea>
+                    <textarea id="address" th:field="*{address}" class="form-control" rows="3"
+                              th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'" required></textarea>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                    <div class="invalid-feedback" id="addressError"></div>
                 </div>
                 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Register</button>
                 </div>
             </form>
             
@@ -127,5 +167,202 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            const email = document.getElementById('email');
+            const username = document.getElementById('username');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const dateOfBirth = document.getElementById('dateOfBirth');
+            const phoneNumber = document.getElementById('phoneNumber');
+            const address = document.getElementById('address');
+            
+            // Enhanced Email Validation Regex - matches standard email format with common TLDs
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            
+            // Common Valid TLDs - used for additional validation
+            const commonTLDs = [
+                'com', 'org', 'net', 'edu', 'gov', 'mil', 'io', 'info',
+                'biz', 'name', 'me', 'tv', 'us', 'uk', 'ca', 'au', 'de', 'jp',
+                'fr', 'it', 'es', 'in', 'br', 'ru', 'nl', 'eu', 'ch', 'se'
+            ];
+            
+            // Password validation regex (at least one uppercase, one lowercase, one number, one special character)
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            
+            // Phone number validation regex (10 digits)
+            const phoneRegex = /^[0-9]{10}$/;
+            
+            // Enhanced email validation
+            function validateEmailWithTLD(emailValue) {
+                // Basic format validation
+                if (!emailRegex.test(emailValue)) {
+                    return { isValid: false, message: 'Please enter a valid email address (e.g., user@example.com)' };
+                }
+                
+                // Check domain TLD against common TLDs
+                const domainParts = emailValue.split('@')[1].split('.');
+                const tld = domainParts[domainParts.length - 1].toLowerCase();
+                
+                if (tld.length === 1) {
+                    return { isValid: false, message: 'Single letter TLDs are not valid email domains' };
+                }
+                
+                if (tld.length > 7) {
+                    return { isValid: false, message: 'TLD is too long to be valid' };
+                }
+                
+                // Optional: Check if TLD is in common list
+                if (!commonTLDs.includes(tld)) {
+                    return { 
+                        isValid: true, 
+                        warning: true, 
+                        message: 'Uncommon email domain TLD. Please verify your email is correct.'
+                    };
+                }
+                
+                return { isValid: true, message: '' };
+            }
+            
+            // Real-time validation for firstName
+            firstName.addEventListener('input', function() {
+                validateField(firstName, firstName.value.trim() !== '', 'First name is required');
+            });
+            
+            // Real-time validation for lastName
+            lastName.addEventListener('input', function() {
+                validateField(lastName, lastName.value.trim() !== '', 'Last name is required');
+            });
+            
+            // Real-time validation for email with enhanced checks
+            email.addEventListener('input', function() {
+                const result = validateEmailWithTLD(email.value);
+                
+                if (!result.isValid) {
+                    email.classList.remove('is-valid');
+                    email.classList.add('is-invalid');
+                    document.getElementById('emailError').textContent = result.message;
+                } else if (result.warning) {
+                    email.classList.remove('is-invalid');
+                    email.classList.add('is-valid');
+                    document.getElementById('emailError').textContent = '';
+                    
+                    // Display warning without marking field as invalid
+                    const warningElement = document.getElementById('emailWarning');
+                    if (!warningElement) {
+                        const warning = document.createElement('small');
+                        warning.id = 'emailWarning';
+                        warning.className = 'form-text text-warning';
+                        warning.textContent = result.message;
+                        email.parentNode.insertBefore(warning, document.querySelector('.form-text.text-muted'));
+                    } else {
+                        warningElement.textContent = result.message;
+                    }
+                } else {
+                    email.classList.remove('is-invalid');
+                    email.classList.add('is-valid');
+                    document.getElementById('emailError').textContent = '';
+                    
+                    // Clear warning if exists
+                    const warningElement = document.getElementById('emailWarning');
+                    if (warningElement) {
+                        warningElement.remove();
+                    }
+                }
+            });
+            
+            // Real-time validation for username
+            username.addEventListener('input', function() {
+                validateField(username, username.value.trim() !== '', 'Username is required');
+            });
+            
+            // Real-time validation for password
+            password.addEventListener('input', function() {
+                validateField(password, passwordRegex.test(password.value), 
+                    'Password must be at least 8 characters and include uppercase, lowercase, number, and special character');
+                
+                // Also validate confirm password if it has a value
+                if (confirmPassword.value) {
+                    validateField(confirmPassword, confirmPassword.value === password.value, 'Passwords do not match');
+                }
+            });
+            
+            // Real-time validation for confirm password
+            confirmPassword.addEventListener('input', function() {
+                validateField(confirmPassword, confirmPassword.value === password.value, 'Passwords do not match');
+            });
+            
+            // Real-time validation for date of birth
+            dateOfBirth.addEventListener('input', function() {
+                const selectedDate = new Date(dateOfBirth.value);
+                const today = new Date();
+                validateField(dateOfBirth, selectedDate < today, 'Date of birth must be in the past');
+            });
+            
+            // Real-time validation for phone number
+            phoneNumber.addEventListener('input', function() {
+                validateField(phoneNumber, phoneRegex.test(phoneNumber.value), 'Phone number must be exactly 10 digits');
+            });
+            
+            // Real-time validation for address
+            address.addEventListener('input', function() {
+                validateField(address, address.value.trim() !== '', 'Address is required');
+            });
+            
+            // Validate form on submit with enhanced email validation
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+                
+                // Validate all fields
+                if (!validateField(firstName, firstName.value.trim() !== '', 'First name is required')) isValid = false;
+                if (!validateField(lastName, lastName.value.trim() !== '', 'Last name is required')) isValid = false;
+                
+                // Enhanced email validation
+                const emailResult = validateEmailWithTLD(email.value);
+                if (!emailResult.isValid) {
+                    email.classList.remove('is-valid');
+                    email.classList.add('is-invalid');
+                    document.getElementById('emailError').textContent = emailResult.message;
+                    isValid = false;
+                }
+                
+                if (!validateField(username, username.value.trim() !== '', 'Username is required')) isValid = false;
+                if (!validateField(password, passwordRegex.test(password.value), 
+                    'Password must be at least 8 characters and include uppercase, lowercase, number, and special character')) isValid = false;
+                if (!validateField(confirmPassword, confirmPassword.value === password.value, 'Passwords do not match')) isValid = false;
+                
+                const selectedDate = new Date(dateOfBirth.value);
+                const today = new Date();
+                if (!validateField(dateOfBirth, selectedDate < today, 'Date of birth must be in the past')) isValid = false;
+                
+                if (!validateField(phoneNumber, phoneRegex.test(phoneNumber.value), 'Phone number must be exactly 10 digits')) isValid = false;
+                if (!validateField(address, address.value.trim() !== '', 'Address is required')) isValid = false;
+                
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+            
+            // Helper function to validate a field and show/hide error
+            function validateField(field, isValid, errorMessage) {
+                const errorElement = document.getElementById(field.id + 'Error');
+                
+                if (!isValid) {
+                    field.classList.remove('is-valid');
+                    field.classList.add('is-invalid');
+                    errorElement.textContent = errorMessage;
+                    return false;
+                } else {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                    errorElement.textContent = '';
+                    return true;
+                }
+            }
+        });
+    </script>
 </body>
 </html> 

@@ -28,4 +28,11 @@ public interface UserService {
     void updateDoctorProfile(Long doctorId, DoctorProfileUpdateRequest request);
     void removeDoctor(Long doctorId);
     Patient updatePatient(Patient patient);
+    
+    /**
+     * Validates if an email address is valid and has a valid domain
+     * @param email the email address to validate
+     * @throws RuntimeException if the email is invalid
+     */
+    void validateEmail(String email);
 } 

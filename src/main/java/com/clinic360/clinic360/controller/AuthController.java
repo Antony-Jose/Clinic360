@@ -3,15 +3,19 @@ package com.clinic360.clinic360.controller;
 import com.clinic360.clinic360.dto.PatientRegistrationRequest;
 import com.clinic360.clinic360.entity.User;
 import com.clinic360.clinic360.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -19,6 +23,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthController {
 
     private final UserService userService;
+    
+    @Value("${app.email.verification.enabled:false}")
+    private boolean emailVerificationEnabled;
 
     @GetMapping("/login")
     public String loginPage() {
@@ -34,21 +41,44 @@ public class AuthController {
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("patient", new PatientRegistrationRequest());
+        model.addAttribute("emailVerificationEnabled", emailVerificationEnabled);
         return "register";
     }
 
     @PostMapping("/register")
-    public String registerPatient(@ModelAttribute("patient") PatientRegistrationRequest request,
-                                RedirectAttributes redirectAttributes) {
+    public String registerPatient(@Valid @ModelAttribute("patient") PatientRegistrationRequest request,
+                                BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
         try {
+            // Check for validation errors
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("patient", request);
+                model.addAttribute("emailVerificationEnabled", emailVerificationEnabled);
+                return "register";
+            }
+            
             // Validate passwords match
             if (!request.getPassword().equals(request.getConfirmPassword())) {
-                redirectAttributes.addFlashAttribute("error", "Passwords do not match");
-                return "redirect:/register";
+                bindingResult.rejectValue("confirmPassword", "error.confirmPassword", "Passwords do not match");
+                model.addAttribute("patient", request);
+                model.addAttribute("emailVerificationEnabled", emailVerificationEnabled);
+                return "register";
+            }
+            
+            // Custom email validation
+            try {
+                userService.validateEmail(request.getEmail());
+            } catch (RuntimeException e) {
+                bindingResult.rejectValue("email", "error.email", e.getMessage());
+                model.addAttribute("patient", request);
+                model.addAttribute("emailVerificationEnabled", emailVerificationEnabled);
+                return "register";
             }
 
             // Register the patient
             User patient = userService.registerPatient(request);
+            
             redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
             return "redirect:/login";
         } catch (Exception e) {
