@@ -24,10 +24,12 @@ public interface UserService {
     List<Doctor> getAllDoctors();
     List<Patient> getAllPatients();
     List<Patient> getPatientsByDoctorId(Long doctorId);
+    List<Patient> searchPatientsByDoctorId(Long doctorId, String searchTerm);
     User updateUser(User user);
     void updateDoctorProfile(Long doctorId, DoctorProfileUpdateRequest request);
     void removeDoctor(Long doctorId);
     Patient updatePatient(Patient patient);
+    void changePatientPassword(Long patientId, String currentPassword, String newPassword);
     
     /**
      * Validates if an email address is valid and has a valid domain
@@ -35,4 +37,18 @@ public interface UserService {
      * @throws RuntimeException if the email is invalid
      */
     void validateEmail(String email);
+
+    /**
+     * Gets the count of new patients for the current month for a specific doctor
+     * @param doctorId the ID of the doctor
+     * @return the count of new patients
+     */
+    long getNewPatientsCountThisMonth(Long doctorId);
+
+    /**
+     * Gets the count of patients seen today for a specific doctor
+     * @param doctorId the ID of the doctor
+     * @return the count of patients seen today
+     */
+    long getPatientsSeenToday(Long doctorId);
 } 

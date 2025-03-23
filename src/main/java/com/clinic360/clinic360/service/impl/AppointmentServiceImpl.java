@@ -220,6 +220,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         response.setStartTime(appointment.getStartTime());
         response.setEndTime(appointment.getEndTime());
         response.setStatus(appointment.getStatus());
+        response.setPrescriptionNotes(appointment.getPrescriptionNotes());
         return response;
     }
 

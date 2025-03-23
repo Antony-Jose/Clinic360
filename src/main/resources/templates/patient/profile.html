@@ -8,6 +8,32 @@
     <title>Patient Profile - Clinic360</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- <link rel="stylesheet" th:href="@{/css/navbar.css}"> -->
+    <style>
+        /* Sidebar styles */
+        #sidebar {
+            min-height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+            z-index: 100;
+        }
+        
+        /* Main content adjustment */
+        main {
+            margin-left: 16.66667%; /* Matches col-md-2 width */
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: static;
+                min-height: auto;
+            }
+            main {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -95,14 +121,19 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                        <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}">
+                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth"
+                                               th:value="${#temporals.format(patient.dateOfBirth, 'yyyy-MM-dd')}"
+                                               th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                               required>
+                                        <small class="form-text text-muted">Date must be in the past</small>
                                     </div>
                                     <div class="mb-3">
                                         <label for="address" class="form-label">Address</label>
                                         <textarea class="form-control" id="address" th:field="*{address}" rows="3"></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-save"></i> Save Changes
+                                    <button type="submit" class="btn btn-primary" id="saveChangesBtn">
+                                        <i class="bi bi-save"></i> <span class="button-text">Save Changes</span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                     </button>
                                 </form>
                             </div>
@@ -125,15 +156,16 @@
                                     <div class="mb-3">
                                         <label for="newPassword" class="form-label">New Password</label>
                                         <input type="password" class="form-control" id="newPassword" name="newPassword" required
-                                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$">
-                                        <small class="form-text text-muted">Password must be at least 8 characters long and include at least one letter and one number</small>
+                                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$">
+                                        <small class="form-text text-muted">Password must be at least 8 characters long and include at least one letter and one number. Special characters are allowed.</small>
                                     </div>
                                     <div class="mb-3">
                                         <label for="confirmPassword" class="form-label">Confirm New Password</label>
                                         <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                                     </div>
                                     <button type="submit" class="btn btn-info text-white">
-                                        <i class="bi bi-key"></i> Change Password
+                                        <i class="bi bi-key"></i> <span class="button-text">Change Password</span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                     </button>
                                 </form>
                             </div>
@@ -216,10 +248,28 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Password confirmation validation
         document.addEventListener('DOMContentLoaded', function() {
+            // Form submission handling
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        const spinner = submitBtn.querySelector('.spinner-border');
+                        const buttonText = submitBtn.querySelector('.button-text');
+                        if (spinner && buttonText) {
+                            spinner.classList.remove('d-none');
+                            buttonText.classList.add('d-none');
+                            submitBtn.disabled = true;
+                        }
+                    }
+                });
+            });
+
+            // Password confirmation validation
             const password = document.getElementById('newPassword');
             const confirm = document.getElementById('confirmPassword');
+            const dateOfBirth = document.getElementById('dateOfBirth');
             
             function validatePassword() {
                 if (password.value !== confirm.value) {
@@ -232,6 +282,20 @@
             if (password && confirm) {
                 password.addEventListener('change', validatePassword);
                 confirm.addEventListener('keyup', validatePassword);
+            }
+
+            // Date of birth validation
+            if (dateOfBirth) {
+                dateOfBirth.addEventListener('change', function() {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+                    
+                    if (selectedDate > today) {
+                        this.setCustomValidity('Date of birth cannot be in the future');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
             }
         });
     </script>

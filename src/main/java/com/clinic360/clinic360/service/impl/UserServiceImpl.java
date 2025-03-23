@@ -229,10 +229,15 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public List<Patient> getPatientsByDoctorId(Long doctorId) {
-        // This method needs a custom query to find all patients who had appointments with this doctor
-        // For now, let's implement a simple version that returns all patients (in reality you'd filter)
-        // This will need to be updated with proper query in the repository
         return patientRepository.findDistinctPatientsByDoctorId(doctorId);
+    }
+    
+    @Override
+    public List<Patient> searchPatientsByDoctorId(Long doctorId, String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getPatientsByDoctorId(doctorId);
+        }
+        return patientRepository.searchPatientsByDoctorId(doctorId, searchTerm.trim());
     }
     
     @Override
@@ -321,6 +326,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long getNewPatientsCountThisMonth(Long doctorId) {
+        return patientRepository.countNewPatientsThisMonth(doctorId);
+    }
+
+    @Override
     @Transactional
     public Patient updatePatient(Patient patient) {
         Patient existingPatient = patientRepository.findById(patient.getId())
@@ -345,5 +355,26 @@ public class UserServiceImpl implements UserService {
         existingPatient.setDateOfBirth(patient.getDateOfBirth());
         
         return patientRepository.save(existingPatient);
+    }
+
+    @Override
+    @Transactional
+    public void changePatientPassword(Long patientId, String currentPassword, String newPassword) {
+        Patient patient = patientRepository.findById(patientId)
+            .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
+        
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, patient.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        
+        // Update password
+        patient.setPassword(passwordEncoder.encode(newPassword));
+        patientRepository.save(patient);
+    }
+
+    @Override
+    public long getPatientsSeenToday(Long doctorId) {
+        return patientRepository.countPatientsSeenToday(doctorId);
     }
 } 

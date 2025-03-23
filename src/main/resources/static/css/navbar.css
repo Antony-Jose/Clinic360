@@ -1,0 +1,45 @@
+/* Sidebar styles */
+#sidebar {
+  min-height: 100vh;
+  position: fixed;
+  padding-top: 20px;
+  z-index: 100;
+  width: 16.66667%;
+}
+
+/* Main content adjustment */
+main {
+  margin-left: 16.66667%; /* Matches col-md-2 width */
+  padding: 20px;
+}
+
+/* Sidebar navigation styles */
+#sidebar .nav-link {
+  padding: 10px 15px;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+#sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#sidebar .nav-link i {
+  margin-right: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #sidebar {
+    position: static;
+    min-height: auto;
+    width: 100%;
+  }
+  main {
+    margin-left: 0;
+  }
+}

@@ -14,6 +14,7 @@ import com.clinic360.clinic360.service.DoctorAvailabilityService;
 import com.clinic360.clinic360.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,7 +83,6 @@ public class DoctorController {
         Long doctorId = userService.getUserIdFromUsername(authentication.getName());
         try {
             DoctorAvailability availability = doctorAvailabilityService.setDoctorAvailability(doctorId, request);
-            doctorAvailabilityService.generateTimeSlotsForDay(doctorId, request.getDayOfWeek());
             redirectAttributes.addFlashAttribute("successMessage", "Availability updated successfully for " + request.getDayOfWeek());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update availability: " + e.getMessage());
@@ -142,16 +142,26 @@ public class DoctorController {
     }
     
     @GetMapping("/patients")
-    public String viewPatients(Authentication authentication, Model model) {
+    public String viewPatients(Authentication authentication, 
+                             @RequestParam(required = false) String search,
+                             Model model) {
         Long doctorId = userService.getUserIdFromUsername(authentication.getName());
-        List<Patient> patients = userService.getPatientsByDoctorId(doctorId);
-        model.addAttribute("patients", patients);
+        List<Patient> patients;
         
-        // Add the missing patient statistics
+        if (search != null && !search.trim().isEmpty()) {
+            patients = userService.searchPatientsByDoctorId(doctorId, search);
+        } else {
+            patients = userService.getPatientsByDoctorId(doctorId);
+        }
+        
+        model.addAttribute("patients", patients);
+        model.addAttribute("searchTerm", search);
+        
+        // Add patient statistics
         model.addAttribute("totalPatients", patients.size());
-        model.addAttribute("newPatientsThisMonth", 0);  // Placeholder
+        model.addAttribute("newPatientsThisMonth", userService.getNewPatientsCountThisMonth(doctorId));
         model.addAttribute("patientsWithAppointments", patients.size());  // All patients have at least one appointment
-        model.addAttribute("patientsSeenToday", 0);  // Placeholder
+        model.addAttribute("patientsSeenToday", userService.getPatientsSeenToday(doctorId));
         
         // Add empty lists for recent patients
         model.addAttribute("recentPatients", Collections.emptyList());

@@ -5,7 +5,6 @@ import com.clinic360.clinic360.dto.AppointmentResponse;
 import com.clinic360.clinic360.entity.Appointment;
 import com.clinic360.clinic360.entity.Doctor;
 import com.clinic360.clinic360.entity.Patient;
-import com.clinic360.clinic360.entity.TimeSlot;
 import com.clinic360.clinic360.service.AppointmentService;
 import com.clinic360.clinic360.service.DoctorAvailabilityService;
 import com.clinic360.clinic360.service.UserService;
@@ -55,13 +54,6 @@ public class PatientController {
         model.addAttribute("doctors", doctors);
         model.addAttribute("appointmentRequest", new AppointmentRequest());
         return "patient/book-appointment";
-    }
-    
-    @GetMapping("/doctor-slots")
-    @ResponseBody
-    public List<TimeSlot> getDoctorSlots(@RequestParam Long doctorId, 
-                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return doctorAvailabilityService.getDoctorTimeSlotsForDate(doctorId, date);
     }
     
     @GetMapping("/check-slot-availability")
@@ -144,6 +136,35 @@ public class PatientController {
             redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update profile: " + e.getMessage());
+        }
+        return "redirect:/patient/profile";
+    }
+
+    @PostMapping("/password/change")
+    public String changePassword(Authentication authentication,
+                               @RequestParam String currentPassword,
+                               @RequestParam String newPassword,
+                               @RequestParam String confirmPassword,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            // Validate password confirmation
+            if (!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "New passwords do not match");
+                return "redirect:/patient/profile";
+            }
+
+            // Validate password pattern
+            if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                    "Password must be at least 8 characters long and include at least one letter and one number");
+                return "redirect:/patient/profile";
+            }
+
+            Long patientId = userService.getUserIdFromUsername(authentication.getName());
+            userService.changePatientPassword(patientId, currentPassword, newPassword);
+            redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to change password: " + e.getMessage());
         }
         return "redirect:/patient/profile";
     }

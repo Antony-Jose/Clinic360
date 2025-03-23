@@ -8,6 +8,31 @@
     <title>My Appointments - Clinic360</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Sidebar styles */
+        #sidebar {
+            min-height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+            z-index: 100;
+        }
+        
+        /* Main content adjustment */
+        main {
+            margin-left: 16.66667%; /* Matches col-md-2 width */
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: static;
+                min-height: auto;
+            }
+            main {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -176,7 +201,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="window.print();">Print</button>
+                                <!-- <button type="button" class="btn btn-primary" onclick="window.print();">Print</button> -->
                             </div>
                         </div>
                     </div>

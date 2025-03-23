@@ -28,12 +28,6 @@ public class Patient extends User {
     @Column(name = "emergency_contact")
     private String emergencyContact;
     
-    @Column(name = "blood_group")
-    private String bloodGroup;
-    
-    @Column(name = "medical_history", columnDefinition = "TEXT")
-    private String medicalHistory;
-    
     // Constructor to set role automatically
     public Patient(String username, String password, String email, String firstName, String lastName,
                   LocalDate dateOfBirth, String phoneNumber, String address) {
