@@ -97,7 +97,7 @@ src/
 │       │   └── admin/
 │       │       └── doctors.html
 │       └── application.properties
-
+```
 ## Security Features
 
 - Role-based access control (ROLE_PATIENT, ROLE_DOCTOR, ROLE_ADMIN)
